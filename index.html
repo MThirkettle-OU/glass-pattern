@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Glass Pattern Experiment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 30px;
+        }
+        canvas {
+            border: 1px solid black;
+            margin-top: 10px;
+        }
+        #instructions {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        #patternType {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="instructions">
+        Use the left (←) and right (→) arrow keys to switch between pattern types. Press any key to log a response.
+    </div>
+    <div id="patternType">Pattern: Circular</div>
+    <canvas id="glassCanvas" width="600" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('glassCanvas');
+        const ctx = canvas.getContext('2d');
+        const patternLabel = document.getElementById('patternType');
+
+        const patterns = ['Circular', 'Radial', 'Spiral'];
+        let currentPatternIndex = 0;
+
+        function drawGlassPattern(type) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const numDipoles = 200;
+            const dipoleLength = 5;
+
+            for (let i = 0; i < numDipoles; i++) {
+                const angle = Math.random() * 2 * Math.PI;
+                const radius = Math.random() * 250;
+
+                let x1, y1, x2, y2;
+
+                if (type === 'Circular') {
+                    x1 = centerX + radius * Math.cos(angle);
+                    y1 = centerY + radius * Math.sin(angle);
+                    x2 = x1 + dipoleLength * Math.cos(angle + Math.PI / 2);
+                    y2 = y1 + dipoleLength * Math.sin(angle + Math.PI / 2);
+                } else if (type === 'Radial') {
+                    x1 = centerX + radius * Math.cos(angle);
+                    y1 = centerY + radius * Math.sin(angle);
+                    x2 = x1 + dipoleLength * Math.cos(angle);
+                    y2 = y1 + dipoleLength * Math.sin(angle);
+                } else if (type === 'Spiral') {
+                    const spiralAngle = angle + radius / 50;
+                    x1 = centerX + radius * Math.cos(angle);
+                    y1 = centerY + radius * Math.sin(angle);
+                    x2 = x1 + dipoleLength * Math.cos(spiralAngle);
+                    y2 = y1 + dipoleLength * Math.sin(spiralAngle);
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+        }
+
+        function updatePattern() {
+            const patternType = patterns[currentPatternIndex];
+            patternLabel.textContent = 'Pattern: ' + patternType;
+            drawGlassPattern(patternType);
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowRight') {
+                currentPatternIndex = (currentPatternIndex + 1) % patterns.length;
+                updatePattern();
+            } else if (event.key === 'ArrowLeft') {
+                currentPatternIndex = (currentPatternIndex - 1 + patterns.length) % patterns.length;
+                updatePattern();
+            } else {
+                console.log('Key pressed:', event.key);
+            }
+        });
+
+        // Initial draw
+        updatePattern();
+    </script>
+</body>
+</html>
