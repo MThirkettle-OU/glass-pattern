@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Glass Pattern Experiment</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 20px; }
+        canvas { border: 1px solid black; margin-top: 10px; }
+        #info { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <div><strong>Instructions:</strong> Use ← and → to change pattern type. Use ↑ and ↓ to adjust coherence.</div>
+        <div><strong>Pattern Type:</strong> <span id="patternType">Circular</span></div>
+        <div><strong>Coherence Level:</strong> <span id="coherenceLevel">0.5</span></div>
+    </div>
+    <canvas id="glassCanvas" width="600" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('glassCanvas');
+        const ctx = canvas.getContext('2d');
+        const patternTypes = ['Circular', 'Radial', 'Spiral'];
+        let currentPatternIndex = 0;
+        let coherence = 0.5;
+        const dipoleCount = 300;
+        const dotRadius = 3;
+
+        function drawPattern() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            for (let i = 0; i < dipoleCount; i++) {
+                const isSignal = Math.random() < coherence;
+                let x1, y1, x2, y2;
+
+                if (isSignal) {
+                    const angle = Math.random() * 2 * Math.PI;
+                    const radius = Math.random() * 250;
+                    switch (patternTypes[currentPatternIndex]) {
+                        case 'Circular':
+                            x1 = centerX + radius * Math.cos(angle);
+                            y1 = centerY + radius * Math.sin(angle);
+                            x2 = centerX + radius * Math.cos(angle + 0.2);
+                            y2 = centerY + radius * Math.sin(angle + 0.2);
+                            break;
+                        case 'Radial':
+                            x1 = centerX + radius * Math.cos(angle);
+                            y1 = centerY + radius * Math.sin(angle);
+                            x2 = centerX + (radius + 10) * Math.cos(angle);
+                            y2 = centerY + (radius + 10) * Math.sin(angle);
+                            break;
+                        case 'Spiral':
+                            const spiralAngle = angle + radius / 50;
+                            x1 = centerX + radius * Math.cos(angle);
+                            y1 = centerY + radius * Math.sin(angle);
+                            x2 = centerX + radius * Math.cos(spiralAngle);
+                            y2 = centerY + radius * Math.sin(spiralAngle);
+                            break;
+                    }
+                } else {
+                    x1 = Math.random() * canvas.width;
+                    y1 = Math.random() * canvas.height;
+                    x2 = Math.random() * canvas.width;
+                    y2 = Math.random() * canvas.height;
+                }
+
+                ctx.beginPath();
+                ctx.arc(x1, y1, dotRadius, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(x2, y2, dotRadius, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
+            document.getElementById('patternType').textContent = patternTypes[currentPatternIndex];
+            document.getElementById('coherenceLevel').textContent = coherence.toFixed(2);
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowRight') {
+                currentPatternIndex = (currentPatternIndex + 1) % patternTypes.length;
+                drawPattern();
+            } else if (event.key === 'ArrowLeft') {
+                currentPatternIndex = (currentPatternIndex - 1 + patternTypes.length) % patternTypes.length;
+                drawPattern();
+            } else if (event.key === 'ArrowUp') {
+                coherence = Math.min(1, coherence + 0.05);
+                drawPattern();
+            } else if (event.key === 'ArrowDown') {
+                coherence = Math.max(0, coherence - 0.05);
+                drawPattern();
+            }
+        });
+
+        drawPattern();
+    </script>
+</body>
+</html>
